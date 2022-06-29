@@ -1,17 +1,29 @@
 ﻿using Alura.Estacionamento.Alura.Estacionamento.Modelos;
 using Alura.Estacionamento.Modelos;
+using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Alura.Estacionamento.Testes
 {
-    public class PatioTestes
+    public class PatioTestes : IDisposable
     {
+        private Veiculo veiculo;
+        private ITestOutputHelper SaidaConsoleTeste;
+
+        public PatioTestes(ITestOutputHelper _saidaConsoleTeste)
+        {
+            SaidaConsoleTeste = _saidaConsoleTeste;
+            SaidaConsoleTeste.WriteLine("Construtor invocado");
+            veiculo = new Veiculo();
+        }
+
         [Fact]
-        public void ValidaFaturamento()
+        public void ValidaFaturamentoDoEstacionamentoComVeiculo()
         {
             //Arrange
             var estacionamento = new Patio();
-            var veiculo = new Veiculo();
+            //var veiculo = new Veiculo();
             veiculo.Proprietario = "André Silva";
             veiculo.Tipo = TipoVeiculo.Automovel;
             veiculo.Cor = "Verde";
@@ -35,16 +47,18 @@ namespace Alura.Estacionamento.Testes
         [InlineData("Jose Silva", "POL-9242", "Cinza", "Fusca")]
         [InlineData("Maria Silva", "GDR-6524", "Azul", "Opala")]
         [InlineData("Pedro Silva", "GDR-0101", "Azul", "Corsa")]
-        public void ValidaFaturamentoComVariosVeiculos(string proprietario, string placa, string cor, string modelo)
+        public void ValidaFaturamentoDoEstacionamentoComVariosVeiculosNoPatio(string proprietario, string placa, string cor, string modelo)
         {
-            //Arrange
-            var estacionamento = new Patio();
-            var veiculo = new Veiculo();
+            //Arranje
+            Patio estacionamento = new Patio();
+
+            //var veiculo = new Veiculo();
             veiculo.Proprietario = proprietario;
             veiculo.Placa = placa;
             veiculo.Cor = cor;
             veiculo.Modelo = modelo;
-
+            veiculo.Acelerar(10);
+            veiculo.Frear(5);
             estacionamento.RegistrarEntradaVeiculo(veiculo);
             estacionamento.RegistrarSaidaVeiculo(veiculo.Placa);
 
@@ -53,6 +67,63 @@ namespace Alura.Estacionamento.Testes
 
             //Assert
             Assert.Equal(2, faturamento);
+        }
+
+        [Theory]
+        [InlineData("André Silva", "ASD-1498", "preto", "Gol")]
+        public void LocalizaVeiculoNoPatioComBaseNaPlaca(string proprietario,
+                                    string placa,
+                                    string cor,
+                                    string modelo)
+        {
+            //Arrange
+            Patio estacionamento = new Patio();
+            //var veiculo = new Veiculo();
+            veiculo.Proprietario = proprietario;
+            veiculo.Placa = placa;
+            veiculo.Cor = cor;
+            veiculo.Modelo = modelo;
+            veiculo.Acelerar(10);
+            veiculo.Frear(5);
+            estacionamento.RegistrarEntradaVeiculo(veiculo);
+
+            //Act
+            var consultado = estacionamento.PesquisaVeiculo(placa);
+
+            //Assert
+            Assert.Equal(placa, consultado.Placa);
+        }
+
+        [Fact]
+        public void AlterarDadosVeiculoDoProprioVeiculo()
+        {
+            //Arrange
+            Patio estacionamento = new Patio();
+            //var veiculo = new Veiculo();
+            veiculo.Proprietario = "José Silva";
+            veiculo.Placa = "ZXC-8524";
+            veiculo.Cor = "Verde";
+            veiculo.Modelo = "Opala";
+            estacionamento.RegistrarEntradaVeiculo(veiculo);
+
+            var veiculoAlterado = new Veiculo();
+            veiculoAlterado.Proprietario = "José Silva";
+            veiculoAlterado.Placa = "ZXC-8524";
+            veiculoAlterado.Cor = "Preto"; //Alteração
+            veiculoAlterado.Modelo = "Opala";
+
+            //Act
+            Veiculo alterado = estacionamento.AlteraDados(veiculoAlterado);
+
+
+            //Assert
+            Assert.Equal(alterado.Cor, veiculoAlterado.Cor);
+
+        }
+
+        public void Dispose()
+        {
+            SaidaConsoleTeste.WriteLine("Dispose invocado");
         }
     }
 }
