@@ -10,12 +10,15 @@ namespace Alura.Estacionamento.Testes
     {
         private Veiculo veiculo;
         private ITestOutputHelper SaidaConsoleTeste;
+        private Operador operador;
 
         public PatioTestes(ITestOutputHelper _saidaConsoleTeste)
         {
             SaidaConsoleTeste = _saidaConsoleTeste;
             SaidaConsoleTeste.WriteLine("Construtor invocado");
             veiculo = new Veiculo();
+            operador = new Operador();
+            operador.Nome = "Pedro Fagundes";
         }
 
         [Fact]
@@ -23,6 +26,7 @@ namespace Alura.Estacionamento.Testes
         {
             //Arrange
             var estacionamento = new Patio();
+            estacionamento.OperadorPatio = operador;
             //var veiculo = new Veiculo();
             veiculo.Proprietario = "André Silva";
             veiculo.Tipo = TipoVeiculo.Automovel;
@@ -51,7 +55,7 @@ namespace Alura.Estacionamento.Testes
         {
             //Arranje
             Patio estacionamento = new Patio();
-
+            estacionamento.OperadorPatio = operador;
             //var veiculo = new Veiculo();
             veiculo.Proprietario = proprietario;
             veiculo.Placa = placa;
@@ -78,6 +82,7 @@ namespace Alura.Estacionamento.Testes
         {
             //Arrange
             Patio estacionamento = new Patio();
+            estacionamento.OperadorPatio = operador;
             //var veiculo = new Veiculo();
             veiculo.Proprietario = proprietario;
             veiculo.Placa = placa;
@@ -95,10 +100,11 @@ namespace Alura.Estacionamento.Testes
         }
 
         [Fact]
-        public void AlterarDadosVeiculoDoProprioVeiculo()
+        public void AlterarDadosDoProprioVeiculo()
         {
             //Arrange
             Patio estacionamento = new Patio();
+            estacionamento.OperadorPatio = operador;
             //var veiculo = new Veiculo();
             veiculo.Proprietario = "José Silva";
             veiculo.Placa = "ZXC-8524";
